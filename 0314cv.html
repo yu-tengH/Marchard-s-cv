@@ -1,256 +1,268 @@
-import React, { useState } from 'react';
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黃語騰 Marchard | 數據分析作品集</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 React 與 ReactDOM (使用 UMD 版本) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- 引入 Babel 轉換 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+        .selection-blue::selection { 
+            background: #dbeafe; 
+            color: #1e40af; 
+        }
+        /* 自定義捲軸樣式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="selection-blue">
+    <div id="root"></div>
 
-// --- 內嵌圖示組件 (確保 100% 渲染成功) ---
-const Icons = {
-  Database: () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-  ),
-  Activity: () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-  ),
-  Terminal: () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-  ),
-  Target: () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-  ),
-  External: () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-  )
-};
+    <script type="text/babel">
+        // 解構 React Hook
+        const { useState, useEffect } = React;
 
-const App = () => {
-  const [activeTab, setActiveTab] = useState(0);
+        // --- 內嵌 SVG 圖示組件 ---
+        const Icons = {
+            Database: () => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            ),
+            Activity: () => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            ),
+            Code: () => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            ),
+            User: () => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            ),
+            External: () => (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            )
+        };
 
-  const projects = [
-    {
-      title: "醫療 AI 營運數據監控系統",
-      type: "Data Analysis & Engineering",
-      desc: "處理 54,000+ 筆醫療 AI 操作紀錄，實作即時運算儀表板。重點在於指標定義與流失偵測，將原始資料轉化為可操作的營運洞察。",
-      highlights: [
-        "使用 T-SQL 窗口函數實作連續流失行為偵測 (Islands & Gaps Analysis)",
-        "設計 KPI 儀表板，即時追蹤功能查詢數、用戶留存與平均評分",
-        "解決民國/西元日期轉換與資料清洗問題，提升分析指標信度"
-      ],
-      code: "-- 窗口函數實作：偵測連續 7 天未登入用戶\nWITH UserStreak AS (\n  SELECT username, aicreatedate, \n  LEAD(aicreatedate) OVER (PARTITION BY username ORDER BY aicreatedate) as next_login\n  FROM AI_LOG\n)\nSELECT * FROM UserStreak \nWHERE DATEDIFF(day, aicreatedate, next_login) > 7;",
-      filename: "retention_logic.sql",
-      tools: ["SQL Server", "C# Razor", "Chart.js"]
-    },
-    {
-      title: "國道智慧交通事故壅塞預測",
-      type: "Machine Learning / AI",
-      desc: "利用 LSTM 與梯度提升樹模型預測事故後 5/10/15 分鐘的壅塞機率，協助救護車路徑規劃決策。",
-      highlights: [
-        "資料清洗與特徵工程：處理雨量、車流與事故類型異質數據",
-        "模型評估：最佳模型 F1-Score 達到 0.82，實測準確率約 80%",
-        "API 整合：串接 Google Maps API 實現動態 ETA 延遲評估"
-      ],
-      code: "# LSTM 模型定義片段\nmodel = Sequential()\nmodel.add(LSTM(64, return_sequences=True, input_shape=(n_steps, n_features)))\nmodel.add(Dropout(0.2))\nmodel.add(Dense(1))\nmodel.compile(optimizer='adam', loss='mse')",
-      filename: "traffic_lstm.py",
-      tools: ["Python", "LSTM", "XGBoost", "REST API"]
-    },
-    {
-      title: "統一超商物流創新：社交數據挖掘",
-      type: "Data Mining / Scraper",
-      desc: "開發爬蟲挖掘非結構化社交媒體評論，量化宅配物流痛點，設計「遠距收貨」解決方案並榮獲季軍。",
-      highlights: [
-        "使用 Python (Selenium) 擷取 FB 社群評論，進行關鍵字挖掘與情緒分析",
-        "從數據中發現重複配送與通知不及時為核心痛點",
-        "結合 UX Prototyping 驗證服務流程，獲 85% 受訪者正面反饋"
-      ],
-      code: "# 社群關鍵字擷取邏輯\nfor post in fb_comments:\n    tokens = jieba.analyse.extract_tags(post['text'], topK=10)\n    if any(k in tokens for k in ['濕', '沒接到', '重複']):\n        log_pain_point(post)",
-      filename: "social_mining.py",
-      tools: ["Python", "BeautifulSoup", "Scrapy", "Figma"]
-    }
-  ];
+        const App = () => {
+            const [selectedProject, setSelectedProject] = useState(0);
 
-  const current = projects[activeTab];
+            const projects = [
+                {
+                    id: "hospital",
+                    title: "醫療 AI 運作監控儀表板",
+                    role: "數據工程實習生 @ 聖馬爾定醫院",
+                    tag: "SQL-based ETL / Analytics",
+                    desc: "處理超過 54,000 筆 AI 操作紀錄，利用 SQL 進階窗口函數實作「即時流失偵測」與「指標動態分析」。重點在於降低資料提取成本，實現秒級數據更新。",
+                    skills: ["T-SQL (Window Functions)", "ASP.NET Razor", "Data Cleaning"],
+                    impact: "將傳統手動彙整轉為自動化儀表板，成功識別高風險流失用戶特徵。",
+                    code: "-- 使用 LEAD 函數實作「島嶼與間隙分析」，精準定位流失用戶\nWITH ChurnData AS (\n  SELECT username, aicreatedate, \n  LEAD(aicreatedate) OVER (PARTITION BY username ORDER BY aicreatedate) as next_login\n  FROM AI_LOG\n)\nSELECT * FROM ChurnData \nWHERE DATEDIFF(day, aicreatedate, next_login) > 7;",
+                    filename: "user_retention.sql"
+                },
+                {
+                    id: "traffic",
+                    title: "國道智慧交通壅塞預測",
+                    role: "數據分析與 ML 建模",
+                    tag: "Machine Learning / API Integration",
+                    desc: "建構 LSTM 模型預測事故後 5/10/15 分鐘的流量趨勢。結合 Google Maps API 產出動態路況決策建議，將 AI 模型轉化為具備商業價值的產品原型。",
+                    skills: ["Python (LSTM/XGBoost)", "Pandas/NumPy", "REST API"],
+                    impact: "模型預測準確率達 80%，獲得 114 年國道智慧交通競賽優選肯定。",
+                    code: "# LSTM 時間序列模型定義片段\nmodel = Sequential()\nmodel.add(LSTM(64, return_sequences=True, input_shape=(n_steps, 1)))\nmodel.add(Dropout(0.2))\nmodel.add(Dense(1))\nmodel.compile(optimizer='adam', loss='mse')",
+                    filename: "congestion_forecast.py"
+                },
+                {
+                    id: "logistics",
+                    title: "宅配商機物流創新洞察",
+                    role: "數據爬蟲 / UX 研究員",
+                    tag: "Unstructured Data Mining",
+                    desc: "開發 Python 爬蟲分析數千筆 FB 社群評論，量化宅配重複配送痛點。結合 UX 訪談驗證「遠距收貨服務」需求，落實數據導向的服務設計。",
+                    skills: ["Web Scraper (Selenium)", "Social Listening", "UX Strategy"],
+                    impact: "榮獲統一超商商業競賽季軍，驗證服務具備 85.9% 使用者嘗試意願。",
+                    code: "# 社群關鍵字挖掘邏輯\nfor post in social_data:\n    keywords = analyze_tags(post['content'])\n    if '沒人收' in keywords or '淋濕' in keywords:\n        update_pain_point_index(post)",
+                    filename: "social_scraper.py"
+                }
+            ];
 
-  return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-blue-100">
-      
-      {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6">
-        <div className="max-w-6xl mx-auto h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-black rounded-2xl flex items-center justify-center text-white font-bold italic shadow-xl">H</div>
-            <span className="font-black text-2xl tracking-tighter">黃語騰<span className="text-blue-600">.</span>DATA</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest">
-            <a href="#projects" className="text-black border-b-2 border-blue-600 pb-1">Projects</a>
-            <a href="#about" className="hover:text-blue-600 transition">About</a>
-            <a href="#skills" className="hover:text-blue-600 transition">Skills</a>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-black transition">Download CV</button>
-          </div>
-        </div>
-      </nav>
+            const current = projects[selectedProject] || projects[0];
 
-      {/* Hero Section */}
-      <section className="pt-48 pb-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-12">
-            <Icons.Activity /> UX Strategist & Data Analyst
-          </div>
-          <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-12">
-            DATA <br />
-            <span className="text-blue-600">ANALYST.</span>
-          </h1>
-          <div className="flex flex-col md:flex-row gap-12 items-end">
-            <p className="text-xl md:text-2xl text-slate-400 max-w-2xl font-medium leading-relaxed">
-              我是語騰 (Marchard Huang)，目前就讀於中正資管碩士班。
-              具備碩一班級 <span className="text-black font-black underline decoration-blue-600 underline-offset-8">排名第 1 (GPA 4.19)</span> 的學術實力，擅長透過數據清洗與 SQL 進階運算，為複雜系統提供視覺化的營運洞察。
-            </p>
-          </div>
-        </div>
-      </section>
+            return (
+                <div className="min-h-screen bg-white text-slate-900 antialiased overflow-x-hidden">
+                    {/* Navigation */}
+                    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6">
+                        <div className="max-w-6xl mx-auto h-20 flex items-center justify-between">
+                            <div className="flex items-center gap-2 group cursor-pointer">
+                                <div className="w-10 h-10 bg-black rounded-2xl flex items-center justify-center text-white font-bold italic shadow-xl group-hover:bg-blue-600 transition-colors">H</div>
+                                <span className="font-black text-2xl tracking-tighter uppercase">Marchard<span className="text-blue-600">.</span>Data</span>
+                            </div>
+                            <div className="hidden md:flex items-center gap-8 text-xs font-black text-slate-400 uppercase tracking-widest">
+                                <a href="#projects" className="text-black border-b-2 border-blue-600 pb-1">Projects</a>
+                                <a href="#about" className="hover:text-blue-600 transition">Academic</a>
+                                <a href="#skills" className="hover:text-blue-600 transition">Skills</a>
+                            </div>
+                        </div>
+                    </nav>
 
-      {/* Projects Section */}
-      <section id="projects" className="py-24 bg-slate-50 border-y border-slate-100 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-16">
-            
-            {/* 左側：分頁標籤 */}
-            <div className="lg:w-1/3 space-y-4">
-              <h2 className="text-xs font-black text-slate-300 uppercase tracking-[0.4em] mb-12">/ SELECTED CASE STUDIES</h2>
-              {projects.map((p, idx) => (
-                <button 
-                  key={idx}
-                  onClick={() => setActiveTab(idx)}
-                  className={`w-full text-left p-8 rounded-[2.5rem] transition-all duration-700 ${
-                    activeTab === idx 
-                    ? 'bg-white shadow-2xl shadow-slate-200/50 -translate-y-1' 
-                    : 'hover:bg-slate-200/40 opacity-40 hover:opacity-100 grayscale hover:grayscale-0'
-                  }`}
-                >
-                  <div className={`text-[10px] font-bold mb-2 tracking-widest uppercase ${activeTab === idx ? 'text-blue-600' : 'text-slate-400'}`}>
-                    {p.type}
-                  </div>
-                  <h3 className={`text-2xl font-black ${activeTab === idx ? 'text-slate-900' : 'text-slate-500'}`}>
-                    {p.title}
-                  </h3>
-                </button>
-              ))}
-            </div>
+                    {/* Hero Section */}
+                    <section className="pt-48 pb-24 px-6">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-sm animate-fade-in">
+                                <Icons.Activity /> UX Strategist & Data Analyst
+                            </div>
+                            <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-12">
+                                DATA <br />
+                                <span className="text-blue-600">ANALYST.</span>
+                            </h1>
+                            <p className="text-xl md:text-3xl text-slate-400 max-w-3xl font-medium leading-relaxed">
+                                我是黃語騰 (Marchard Huang)，專注於將混亂的原始數據轉化為決策指標。
+                                目前班級 <span className="text-black font-black underline decoration-blue-600 decoration-8 underline-offset-8">排名第 1 (GPA 4.19)</span>，具備深厚的數據工程實作與 UX 用戶洞察實力。
+                            </p>
+                        </div>
+                    </section>
 
-            {/* 右側：詳細內容視窗 */}
-            <div className="lg:w-2/3">
-              <div className="bg-white rounded-[3.5rem] p-10 md:p-14 shadow-2xl shadow-slate-200 border border-slate-100 min-h-[600px] flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-3 text-blue-600 font-bold text-xs mb-8 uppercase tracking-widest">
-                    <Icons.Database /> Technical Deep Dive
-                  </div>
-                  <h3 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter leading-tight">{current.title}</h3>
-                  <p className="text-xl text-slate-500 mb-10 leading-relaxed font-medium">
-                    {current.desc}
-                  </p>
-                  
-                  <div className="space-y-4 mb-10">
-                    {current.highlights.map((h, i) => (
-                      <div key={i} className="flex gap-4 items-start text-slate-600">
-                        <div className="mt-2 w-1.5 h-1.5 bg-blue-600 rounded-full shrink-0" />
-                        <p className="font-medium">{h}</p>
-                      </div>
-                    ))}
-                  </div>
+                    {/* Projects Section */}
+                    <section id="projects" className="py-24 bg-slate-50 border-y border-slate-100 px-6">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="flex flex-col lg:flex-row gap-16">
+                                {/* Project Selector */}
+                                <div className="lg:w-1/3 space-y-6">
+                                    <h2 className="text-xs font-black text-slate-300 uppercase tracking-[0.4em] mb-12">/ SELECTED CASE STUDIES</h2>
+                                    {projects.map((p, idx) => (
+                                        <button 
+                                            key={idx}
+                                            onClick={() => setSelectedProject(idx)}
+                                            className={`w-full text-left p-8 rounded-[2.5rem] transition-all duration-500 ${
+                                                selectedProject === idx 
+                                                ? 'bg-white shadow-2xl shadow-slate-200/50 -translate-y-2' 
+                                                : 'hover:bg-slate-200/50 opacity-40 hover:opacity-100 grayscale hover:grayscale-0'
+                                            }`}
+                                        >
+                                            <div className={`text-[10px] font-black mb-3 tracking-widest uppercase ${selectedProject === idx ? 'text-blue-600' : 'text-slate-400'}`}>
+                                                {p.tag}
+                                            </div>
+                                            <h3 className={`text-2xl font-black ${selectedProject === idx ? 'text-black' : 'text-slate-500'}`}>
+                                                {p.title}
+                                            </h3>
+                                        </button>
+                                    ))}
+                                </div>
 
-                  {/* 模擬程式碼展示區 */}
-                  <div className="bg-[#0D1117] rounded-[2rem] p-8 text-white font-mono text-sm overflow-hidden border border-slate-800 shadow-2xl relative group">
-                    <div className="flex gap-2 mb-6 border-b border-white/5 pb-4">
-                      <div className="w-3 h-3 rounded-full bg-slate-700"></div>
-                      <div className="w-3 h-3 rounded-full bg-slate-700"></div>
-                      <div className="w-3 h-3 rounded-full bg-slate-700"></div>
-                      <span className="text-[10px] text-slate-500 ml-4 uppercase font-sans font-bold tracking-widest">{current.filename}</span>
-                    </div>
-                    <pre className="text-blue-300 leading-relaxed whitespace-pre-wrap font-medium">
-                      <code>{current.code}</code>
-                    </pre>
-                  </div>
+                                {/* Project Detail Display */}
+                                <div className="lg:w-2/3">
+                                    <div className="bg-white rounded-[3.5rem] p-10 md:p-14 shadow-2xl border border-slate-100 min-h-[650px] flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center gap-3 text-blue-600 font-bold text-xs mb-8 uppercase tracking-[0.2em]">
+                                                <Icons.Database /> Technical Implementation
+                                            </div>
+                                            <h3 className="text-4xl md:text-6xl font-black text-black mb-6 tracking-tighter leading-tight">{current.title}</h3>
+                                            <p className="text-lg font-bold text-blue-600 mb-8 italic uppercase tracking-wider">{current.role}</p>
+                                            <p className="text-xl text-slate-500 mb-10 leading-relaxed font-medium">{current.desc}</p>
+                                            
+                                            <div className="flex flex-wrap gap-3 mb-12">
+                                                {current.skills.map((s, i) => (
+                                                    <span key={i} className="px-5 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">{s}</span>
+                                                ))}
+                                            </div>
+
+                                            {/* Logic View / Terminal Style */}
+                                            <div className="bg-[#0D1117] rounded-[2.5rem] p-8 text-white font-mono text-sm overflow-hidden border border-slate-800 shadow-2xl relative">
+                                                <div className="flex gap-2 mb-6 border-b border-white/5 pb-4">
+                                                    <div className="w-3 h-3 rounded-full bg-slate-700"></div>
+                                                    <div className="w-3 h-3 rounded-full bg-slate-700"></div>
+                                                    <div className="w-3 h-3 rounded-full bg-slate-700"></div>
+                                                    <span className="text-[10px] text-slate-500 ml-4 uppercase font-sans font-bold tracking-widest">{current.filename}</span>
+                                                </div>
+                                                <pre className="text-blue-300 leading-relaxed whitespace-pre-wrap font-medium">
+                                                    <code>{current.code}</code>
+                                                </pre>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-12 pt-10 border-t border-slate-50 flex items-center justify-between text-blue-600 font-black text-xs uppercase tracking-[0.3em]">
+                                           Result: {current.impact}
+                                           <Icons.External />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Academic Section */}
+                    <section id="about" className="py-32 px-6">
+                        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+                            <div>
+                                <h2 className="text-4xl font-black text-black mb-12 tracking-tighter underline decoration-blue-600 decoration-8 underline-offset-8 uppercase">Academic & Professional</h2>
+                                <div className="space-y-12">
+                                    {[
+                                        { num: "01", title: "中正資管碩士班 醫資組", desc: "班級排名 1/16 (Top 6%) | GPA 4.19 / 4.3" },
+                                        { num: "02", title: "成大資料分析社 NCKU DAC", desc: "專注於 End-to-End 數據分析流程與特徵工程。" },
+                                        { num: "03", title: "SPSS 商業數據分析師", desc: "具備嚴謹的統計假設檢定與量化分析能力。" }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex gap-8 group">
+                                            <div className="font-black text-blue-600 text-3xl italic group-hover:scale-110 transition-transform">{item.num}</div>
+                                            <div>
+                                                <h4 className="font-black text-2xl mb-2 text-slate-800">{item.title}</h4>
+                                                <p className="text-slate-500 text-lg leading-relaxed">{item.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="bg-slate-900 rounded-[4rem] p-16 text-white shadow-2xl relative overflow-hidden">
+                                <div className="absolute -top-12 -right-12 w-64 h-64 bg-blue-600 rounded-full blur-[100px] opacity-20"></div>
+                                <h3 className="text-4xl font-black mb-8 leading-tight tracking-tighter">"數據工程的深度決定了分析的廣度。"</h3>
+                                <p className="text-slate-400 text-xl leading-relaxed mb-10">
+                                    我不僅能撰寫複雜的 SQL 與模型代碼，更具備 UX 產品背景，確保數據產品能真正轉化為「可感知的商業決策」。
+                                </p>
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="border-l-4 border-blue-600 pl-6 py-2">
+                                        <div className="text-blue-500 font-black text-4xl mb-1 tracking-tighter">1st</div>
+                                        <div className="text-[10px] uppercase font-bold text-slate-500 tracking-widest tracking-widest">Academic Rank</div>
+                                    </div>
+                                    <div className="border-l-4 border-blue-600 pl-6 py-2">
+                                        <div className="text-blue-500 font-black text-4xl mb-1 tracking-tighter">54K+</div>
+                                        <div className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Logs Analyzed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer className="py-24 text-center border-t border-slate-100">
+                        <div className="flex justify-center gap-10 mb-8 grayscale hover:grayscale-0 transition duration-500 opacity-30 hover:opacity-100">
+                            <Icons.Activity />
+                            <Icons.Database />
+                            <Icons.Code />
+                        </div>
+                        <p className="text-slate-300 text-[10px] font-black uppercase tracking-[0.5em]">YU TENG (MARCHARD) HUANG // © 2026 PORTFOLIO</p>
+                    </footer>
                 </div>
+            );
+        };
 
-                <div className="mt-12 flex flex-wrap gap-3 pt-10 border-t border-slate-50">
-                  {current.tools.map((t, i) => (
-                    <span key={i} className="px-4 py-1.5 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About & Stats */}
-      <section id="about" className="py-32 px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
-          <div>
-            <h2 className="text-4xl font-black text-black mb-10 tracking-tighter underline decoration-blue-600 decoration-8 underline-offset-8">學術與專業背景</h2>
-            <div className="space-y-12">
-              <div className="flex gap-8">
-                <div className="font-black text-blue-600 text-3xl">01</div>
-                <div>
-                  <h4 className="font-black text-2xl mb-2 text-slate-800">中正大學 資管所 (醫資組)</h4>
-                  <p className="text-lg text-slate-500 leading-relaxed">
-                    班級排名 1/16 (Top 6%) | GPA 4.19 / 4.3 <br />
-                    專注於醫療數據建模與機器學習應用研究。
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-8">
-                <div className="font-black text-blue-600 text-3xl">02</div>
-                <div>
-                  <h4 className="font-black text-2xl mb-2 text-slate-800">成大資料分析社 (NCKU DAC)</h4>
-                  <p className="text-lg text-slate-500 leading-relaxed">
-                    系統性學習數據科學流程，包含特徵工程、模型調優與 EDA 實作。
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-8">
-                <div className="font-black text-blue-600 text-3xl">03</div>
-                <div>
-                  <h4 className="font-black text-2xl mb-2 text-slate-800">SPSS 商業數據分析師</h4>
-                  <p className="text-lg text-slate-500 leading-relaxed">
-                    通過 AsiaAnalytics 認證，具備嚴謹的統計假設檢定與量化分析能力。
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center">
-            <div className="bg-slate-900 rounded-[3.5rem] p-12 text-white shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-12 opacity-5 text-white"><Icons.Target /></div>
-               <h3 className="text-3xl font-black mb-8 leading-tight italic">"數據是理性的基礎，而 UX 讓理性能被感知與應用。"</h3>
-               <p className="text-slate-400 text-lg leading-relaxed mb-10">
-                 我不僅能開發高效能的 SQL 查詢與機器學習模型，更因為具備 UX 背景，我能設計出真正符合「決策者需求」的數據產品。
-               </p>
-               <div className="grid grid-cols-2 gap-6">
-                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl text-center">
-                   <div className="text-blue-400 font-black text-3xl mb-1">54,000+</div>
-                   <div className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Logs Analyzed</div>
-                 </div>
-                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl text-center">
-                   <div className="text-blue-400 font-black text-3xl mb-1">Rank 1</div>
-                   <div className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Academic Excellence</div>
-                 </div>
-               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-24 border-t border-slate-100 text-center">
-        <p className="text-slate-300 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
-          Built by Marchard Huang // 2026 Portfolio
-        </p>
-        <div className="flex justify-center gap-10 text-slate-400 font-bold text-xs uppercase tracking-widest">
-          <a href="#" className="hover:text-blue-600 transition cursor-pointer">LinkedIn</a>
-          <a href="#" className="hover:text-blue-600 transition cursor-pointer">GitHub</a>
-          <a href="#" className="hover:text-blue-600 transition cursor-pointer">Email</a>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-export default App;
+        // 渲染 App 到 root 節點
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>
